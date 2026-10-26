@@ -34,16 +34,28 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(express.static('public'))
 
+// if the database isn't connected yet, answer right away instead of leaving the page loading forever
+app.use((req, res, next) => {
+  if (!db) return res.status(503).send('Still connecting to the database. Wait a few seconds and refresh the page.')
+  next()
+})
+
 app.get('/', (req, res) => {
   db.collection('messages').find().toArray((err, result) => {
-    if (err) return console.log(err)
+    if (err) {
+      console.log(err)
+      return res.status(500).send('Could not load the messages. Check the server logs.')
+    }
     res.render('index.ejs', {messages: result})
   })
 })
 
 app.post('/messages', (req, res) => {
   db.collection('messages').insertOne({name: req.body.name, msg: req.body.msg, thumbUp: 0, thumbDown:0}, (err, result) => {
-    if (err) return console.log(err)
+    if (err) {
+      console.log(err)
+      return res.status(500).send('Could not save the message. Check the server logs.')
+    }
     console.log('saved to database')
     res.redirect('/')
   })
