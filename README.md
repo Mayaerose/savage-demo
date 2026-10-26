@@ -72,7 +72,7 @@ The routes follow the CRUD pattern from class:
 - How to use nodemon so I don't have to restart the server by hand
 - How to fix security warnings by updating my packages
 
-VIEW APP HERE: https://savage-demo-5bh7.onrender.com/
+VIEW APP HERE: https://savage-demo-5bh7.onrender.com
 
 ## Author
 
