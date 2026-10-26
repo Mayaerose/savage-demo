@@ -1,3 +1,4 @@
+require('dotenv').config() // loads MONGODB_URI from the .env file when you run it on your computer
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
@@ -5,13 +6,23 @@ const MongoClient = require('mongodb').MongoClient
 
 var db, collection;
 
-const url = "mongodb+srv://demo:demo@cluster0-q2ojb.mongodb.net/test?retryWrites=true";
-const dbName = "demo";
+// the connection string now comes from the environment, so the password is never in the code
+const url = process.env.MONGODB_URI;
+const dbName = process.env.DB_NAME || "demo";
+// Render tells the app which port to use. On my computer it falls back to 3000
+const port = process.env.PORT || 3000;
 
-app.listen(3000, () => {
+if (!url) {
+    console.log("Missing MONGODB_URI. Add it to your .env file (see .env.example), or to Environment on Render.");
+    process.exit(1);
+}
+
+app.listen(port, () => {
+    console.log("Server is running on port " + port);
     MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
         if(error) {
-            throw error;
+            console.log("Could not connect to MongoDB:", error.message);
+            process.exit(1);
         }
         db = client.db(dbName);
         console.log("Connected to `" + dbName + "`!");
