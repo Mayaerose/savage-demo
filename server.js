@@ -19,7 +19,15 @@ if (!url) {
 
 app.listen(port, () => {
     console.log("Server is running on port " + port);
-    MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
+       MongoClient.connect(url, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        auth: {
+            user: process.env.MONGODB_USER,
+            password: process.env.MONGODB_PASSWORD
+        },
+        authSource: 'admin'
+    }, (error, client) => {
         if(error) {
             console.log("Could not connect to MongoDB:", error.message);
             process.exit(1);
